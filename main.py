@@ -248,5 +248,8 @@ class BasicApp(App):
         )
 
 
+app = BasicApp.get_wsgi_application()
+
+
 if __name__ == "__main__":
     BasicApp.run()
