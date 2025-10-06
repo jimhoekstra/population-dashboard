@@ -6,6 +6,7 @@ from newsflash.types import Layout
 from newsflash.widgets import (
     Columns,
     FlexRows,
+    Rows,
     Title,
     Paragraph,
     Button,
@@ -167,8 +168,7 @@ class BasicApp(App):
         )
         
         dataset_text = (
-            "The underlying dataset for this dashboard is provided under a creative "
-            "commons license by the Dutch Centraal Bureau voor de Statistiek (CBS). "
+            "The data comes from the Dutch Centraal Bureau voor de Statistiek (CBS). "
             "The data is retrieved periodically through the StatLine API. The population "
             "dataset can be found [here](https://opendata.cbs.nl/portal.html?_la=nl&_catalog"
             "=CBS&tableId=85496NED&_theme=61)."
@@ -176,76 +176,58 @@ class BasicApp(App):
         dashboard_code_text = (
             "The code that implements this dashboard is licensed under the "
             "open-source MIT license and can be found on the [GitHub page]"
-            "(https://github.com/jimhoekstra/newsflash)."
+            "(https://github.com/jimhoekstra/population-dashboard)."
         )
 
-        return Columns(
+        charts_column = Rows(
             children=[
-                FlexRows(
-                    children=[
-                        Line(),
-                        Bar(),
-                    ]
-                ),
-                FlexRows(
-                    children=[
-                        Title(title="Dutch Population Dashboard"),
-                        Columns(
-                            children=[
-                                Paragraph(
-                                    text=group_select_text,
-                                ),
-                                Paragraph(
-                                    text=year_select_text,
-                                ),
-                            ]
-                        ),
-                        Columns(
-                            children=[
-                                FlexRows(
-                                    children=[
-                                        GroupSelect(),
-                                        GroupResetBtn(),
-                                    ]
-                                ),
-                                FlexRows(
-                                    children=[
-                                        YearSelect(),
-                                        Columns(
-                                            children=[
-                                                PreviousYearBtn(),
-                                                NextYearBtn(),
-                                            ]
-                                        ),
-                                    ]
-                                ),
-                            ]
-                        ),
-                        Space(),
-                        Columns(
-                            children=[
-                                FlexRows(
-                                    children=[
-                                        Title(title="Data", text_size="2xl"),
-                                        Paragraph(
-                                            text=dataset_text,
-                                        ),
-                                    ]
-                                ),
-                                FlexRows(
-                                    children=[
-                                        Title(title="Code", text_size="2xl"),
-                                        Paragraph(
-                                            text=dashboard_code_text,
-                                        ),
-                                    ]
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
+                Line(),
+                Bar(),
             ]
         )
+
+        title_row = Title(title="Dutch Population Dashboard")
+        explanations_row = Columns(
+            children=[
+                Paragraph(text=group_select_text),
+                Paragraph(text=year_select_text),
+            ]
+        )
+
+        group_input_block = FlexRows(children=[GroupSelect(), GroupResetBtn()])
+        year_input_block = FlexRows(
+            children=[
+                YearSelect(),
+                Columns(children=[PreviousYearBtn(), NextYearBtn()]),
+            ]
+        )
+        inputs_row = Columns(children=[group_input_block, year_input_block])
+
+        dataset_col = FlexRows(
+            children=[
+                Title(title="Data", text_size="2xl"),
+                Paragraph(text=dataset_text),
+            ]
+        )
+        code_col = FlexRows(
+            children=[
+                Title(title="Code", text_size="2xl"),
+                Paragraph(text=dashboard_code_text),
+            ]
+        )
+        acknowledgements_row = Columns(children=[dataset_col, code_col])
+
+        right_column = FlexRows(
+            children=[
+                title_row,
+                explanations_row,
+                inputs_row,
+                Space(),
+                acknowledgements_row,
+            ]
+        )
+
+        return Columns(children=[charts_column, right_column])
 
 
 app = BasicApp.get_wsgi_application()
