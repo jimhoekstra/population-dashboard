@@ -34,7 +34,7 @@ class GroupSelect(EnumSelect):
 
     def on_input(
         self,
-        line_chart: Annotated["Line", "line"],
+        line_chart: Annotated["PopulationGrowthChart", "population-growth-line-chart"],
     ) -> None:
         year, population = get_population_growth_data(self.selected)
         line_chart.title = f"Population ({self.selected}) Over Time"
@@ -48,7 +48,7 @@ class YearSelect(ListSelect):
 
     def on_input(
         self,
-        bar_chart: Annotated["Bar", "bar"],
+        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
     ) -> None:
         labels, bars = get_age_distribution(int(self.selected))
         bar_chart.title = f"Age Distribution in {self.selected}"
@@ -63,8 +63,8 @@ class GroupResetBtn(Button):
         self,
         group_select: Annotated[GroupSelect, "group-select", "input+output"],
         year_select: Annotated[YearSelect, "year-select", "input+output"],
-        line_chart: Annotated["Line", "line"],
-        bar_chart: Annotated["Bar", "bar"],
+        line_chart: Annotated["PopulationGrowthChart", "population-growth-line-chart"],
+        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
         notifications: Annotated[Notifications, "notifications"],
     ) -> None:
         current_group = group_select.selected
@@ -100,7 +100,7 @@ class PreviousYearBtn(Button):
     def on_click(
         self,
         year_select: Annotated[YearSelect, "year-select", "input+output"],
-        bar_chart: Annotated["Bar", "bar"],
+        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
     ) -> None:
         current_year = int(year_select.selected)
         year_select.selected = str(current_year - 1)
@@ -114,7 +114,7 @@ class NextYearBtn(Button):
     def on_click(
         self,
         year_select: Annotated[YearSelect, "year-select", "input+output"],
-        bar_chart: Annotated["Bar", "bar"],
+        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
     ) -> None:
         current_year = int(year_select.selected)
         year_select.selected = str(current_year + 1)
@@ -133,8 +133,8 @@ class NotificationBtn(Button):
         notifications.push(f"You selected: {choice.selected}", 5000)
 
 
-class Bar(BarChart):
-    id: str = "bar"
+class AgeDistributionChart(BarChart):
+    id: str = "age-distribution-bar-chart"
     title: str = "Bar Chart"
     y_major_grid_lines: bool = True
 
@@ -144,8 +144,8 @@ class Bar(BarChart):
         self.set_bars(labels, bars)
 
 
-class Line(LineChart):
-    id: str = "line"
+class PopulationGrowthChart(LineChart):
+    id: str = "population-growth-line-chart"
     title: str = "Line Chart"
     y_major_grid_lines: bool = True
     x_major_grid_lines: bool = True
@@ -181,8 +181,8 @@ class BasicApp(App):
 
         charts_column = Rows(
             children=[
-                Line(),
-                Bar(),
+                PopulationGrowthChart(),
+                AgeDistributionChart(),
             ]
         )
 
