@@ -89,7 +89,7 @@ class SetYearButton(Button):
                 new_year = current_year - 1
             else:
                 new_year = current_year + 1
-        
+
         year_select.selected = str(new_year)
         chart.on_load(year_select)
 
@@ -108,49 +108,57 @@ class SetGroupButton(Button):
 
 class BasicApp(App):
     def compose(self) -> Layout:
-
-        age_distribution_text = \
-            "Select a year to view the age distribution in that year. " \
-            "Alternatively you can use the buttons below the chart to " \
+        age_distribution_text = (
+            "Select a year to view the age distribution in that year. "
+            "Alternatively you can use the buttons below the chart to "
             "select the previous or next year."
-        
-        population_growth_text = \
-            "Select a population group to view the growth in population " \
+        )
+
+        population_growth_text = (
+            "Select a population group to view the growth in population "
             "for that group over time."
-        
-        dataset_text = \
-            "The data comes from the Dutch Centraal Bureau voor de Statistiek (CBS). " \
-            "The data is retrieved periodically through the StatLine API. The population " \
-            "dataset can be found [here](https://opendata.cbs.nl/portal.html?_la=nl&_catalog" \
+        )
+
+        dataset_text = (
+            "The data comes from the Dutch Centraal Bureau voor de Statistiek (CBS). "
+            "The data is retrieved periodically through the StatLine API. The population "
+            "dataset can be found [here](https://opendata.cbs.nl/portal.html?_la=nl&_catalog"
             "=CBS&tableId=85496NED&_theme=61)."
-        
-        dashboard_code_text = \
-            "The code that implements this dashboard is licensed under the " \
-            "open-source MIT license and can be found on the [GitHub page]" \
+        )
+
+        dashboard_code_text = (
+            "The code that implements this dashboard is licensed under the "
+            "open-source MIT license and can be found on the [GitHub page]"
             "(https://github.com/jimhoekstra/population-dashboard)."
-        
+        )
+
         elements = [
-            Title(title="Age Distribution per Year"),
+            Title(title="Dutch Population Dashboard"),
+            Title(title="Age Groups", text_size="3xl"),
             Paragraph(text=age_distribution_text),
             YearSelect(),
             AgeDistributionChart(),
             build_columns(
                 SetYearButton(id="prev-year-btn", text="Previous Year", previous=True),
                 SetYearButton(id="next-year-btn", text="Next Year"),
-                SetYearButton(id="reset-year-btn", text="Reset 2024", target=2024),
+                SetYearButton(id="reset-year-btn", text="Reset to 2024", target=2024),
             ),
-
-            Title(title="Population Growth per Group"),
+            Title(title="Population Growth", text_size="3xl"),
             Paragraph(text=population_growth_text),
             GroupSelect(),
             PopulationGrowthChart(),
             build_columns(
-                SetGroupButton(id="select-total", group=GroupOption.TOTAL, text=GroupOption.TOTAL),
-                SetGroupButton(id="select-men", group=GroupOption.MEN, text=GroupOption.MEN),
-                SetGroupButton(id="select-women", group=GroupOption.WOMEN, text=GroupOption.WOMEN),
+                SetGroupButton(
+                    id="select-total", group=GroupOption.TOTAL, text=GroupOption.TOTAL
+                ),
+                SetGroupButton(
+                    id="select-women", group=GroupOption.WOMEN, text=GroupOption.WOMEN
+                ),
+                SetGroupButton(
+                    id="select-men", group=GroupOption.MEN, text=GroupOption.MEN
+                ),
             ),
-
-            Title(title="Data & Code"),
+            Title(title="Data & Code", text_size="3xl"),
             Paragraph(text=dataset_text),
             Paragraph(text=dashboard_code_text),
         ]
