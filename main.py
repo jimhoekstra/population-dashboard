@@ -4,41 +4,23 @@ from enum import StrEnum
 from newsflash import App
 from newsflash.types import Layout
 from newsflash.widgets import (
-    Columns,
-    FlexRows,
-    Rows,
     Title,
     Paragraph,
     Button,
-    Notifications,
-    EnumSelect,
     ListSelect,
-    Space,
+    EnumSelect,
 )
 from newsflash.widgets.chart.bar import BarChart
 from newsflash.widgets.chart.line import LineChart
-
 from data import get_population_growth_data, get_age_distribution
+from newsflash.widgets.layout.columns import build_columns
+from newsflash.widgets.layout.flex import build_rows
 
 
 class GroupOption(StrEnum):
     TOTAL = "Total"
     WOMEN = "Women"
     MEN = "Men"
-
-
-class GroupSelect(EnumSelect):
-    id: str = "group-select"
-    options: Type[StrEnum] = GroupOption
-    selected: GroupOption = GroupOption.TOTAL
-
-    def on_input(
-        self,
-        line_chart: Annotated["PopulationGrowthChart", "population-growth-line-chart"],
-    ) -> None:
-        year, population = get_population_growth_data(self.selected)
-        line_chart.title = f"Population ({self.selected}) Over Time"
-        line_chart.set_points(year, population)
 
 
 class YearSelect(ListSelect):
@@ -52,182 +34,130 @@ class YearSelect(ListSelect):
     ) -> None:
         labels, bars = get_age_distribution(int(self.selected))
         bar_chart.title = f"Age Distribution in {self.selected}"
-        bar_chart.set_bars(labels, bars)
+        bar_chart.set_points(labels, [float(x) for x in bars])
 
 
-class GroupResetBtn(Button):
-    id: str = "reset-group"
-    text: str = "Reset Inputs"
+class GroupSelect(EnumSelect):
+    id: str = "group-select"
+    options: Type[StrEnum] = GroupOption
+    selected: GroupOption = GroupOption.TOTAL
 
-    def on_click(
+    def on_input(
         self,
-        group_select: Annotated[GroupSelect, "group-select", "input+output"],
-        year_select: Annotated[YearSelect, "year-select", "input+output"],
         line_chart: Annotated["PopulationGrowthChart", "population-growth-line-chart"],
-        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
-        notifications: Annotated[Notifications, "notifications"],
     ) -> None:
-        current_group = group_select.selected
-        current_year = year_select.selected
-        notification = ""
-
-        if current_group != GroupOption.TOTAL:
-            group_select.selected = GroupOption.TOTAL
-            group_select.on_input(line_chart)
-            notification += f"Resetting group (was {current_group}). "
-        else:
-            group_select.cancel_update()
-            line_chart.cancel_update()
-
-        if current_year != "2024":
-            year_select.selected = "2024"
-            year_select.on_input(bar_chart)
-            notification += f"Resetting year (was {current_year}). "
-        else:
-            year_select.cancel_update()
-            bar_chart.cancel_update()
-
-        if notification == "":
-            notifications.push("Nothing to reset.", 5000)
-        else:
-            notifications.push(notification, 5000)
-
-
-class PreviousYearBtn(Button):
-    id: str = "previous-year-btn"
-    text: str = "Previous Year"
-
-    def on_click(
-        self,
-        year_select: Annotated[YearSelect, "year-select", "input+output"],
-        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
-    ) -> None:
-        current_year = int(year_select.selected)
-        year_select.selected = str(current_year - 1)
-        year_select.on_input(bar_chart)
-
-
-class NextYearBtn(Button):
-    id: str = "next-year-btn"
-    text: str = "Next Year"
-
-    def on_click(
-        self,
-        year_select: Annotated[YearSelect, "year-select", "input+output"],
-        bar_chart: Annotated["AgeDistributionChart", "age-distribution-bar-chart"],
-    ) -> None:
-        current_year = int(year_select.selected)
-        year_select.selected = str(current_year + 1)
-        year_select.on_input(bar_chart)
-
-
-class NotificationBtn(Button):
-    id: str = "notification-btn"
-    text: str = "Press Me!"
-
-    def on_click(
-        self,
-        notifications: Annotated[Notifications, "notifications"],
-        choice: Annotated[GroupSelect, "group-select"],
-    ) -> None:
-        notifications.push(f"You selected: {choice.selected}", 5000)
+        years, points = get_population_growth_data(self.selected)
+        line_chart.title = f"Population Growth ({self.selected})"
+        line_chart.set_points(xs=years, ys=points)
 
 
 class AgeDistributionChart(BarChart):
     id: str = "age-distribution-bar-chart"
-    title: str = "Bar Chart"
     y_major_grid_lines: bool = True
 
     def on_load(self, year_select: Annotated[YearSelect, "year-select"]) -> None:
         labels, bars = get_age_distribution(int(year_select.selected))
         self.title = f"Age Distribution in {year_select.selected}"
-        self.set_bars(labels, bars)
+        self.set_points(labels, [float(x) for x in bars])
 
 
 class PopulationGrowthChart(LineChart):
     id: str = "population-growth-line-chart"
-    title: str = "Line Chart"
     y_major_grid_lines: bool = True
-    x_major_grid_lines: bool = True
 
     def on_load(self, group_select: Annotated[GroupSelect, "group-select"]) -> None:
-        year, population = get_population_growth_data(group_select.selected)
-        self.title = f"Population ({group_select.selected}) Over Time"
-        self.set_points(year, population)
+        years, points = get_population_growth_data(group_select.selected)
+        self.title = f"Population Growth ({group_select.selected})"
+        self.set_points(xs=years, ys=points)
+
+
+class SetYearButton(Button):
+    previous: bool = False
+    target: int | None = None
+
+    def on_click(
+        self,
+        chart: Annotated[AgeDistributionChart, "age-distribution-bar-chart"],
+        year_select: Annotated[YearSelect, "year-select", "input+output"],
+    ) -> None:
+        current_year = int(year_select.selected)
+
+        if self.target:
+            new_year = self.target
+        else:
+            if self.previous:
+                new_year = current_year - 1
+            else:
+                new_year = current_year + 1
+        
+        year_select.selected = str(new_year)
+        chart.on_load(year_select)
+
+
+class SetGroupButton(Button):
+    group: GroupOption
+
+    def on_click(
+        self,
+        chart: Annotated[PopulationGrowthChart, "population-growth-line-chart"],
+        group_select: Annotated[GroupSelect, "group-select", "output"],
+    ) -> None:
+        group_select.selected = self.group
+        chart.on_load(group_select)
 
 
 class BasicApp(App):
     def compose(self) -> Layout:
-        group_select_text = (
-            "Select a population in the following dropdown menu "
-            "to view the population growth over time for this specific group."
-        )
-        year_select_text = (
-            "Select a population in the following dropdown menu to view the age "
-            "distribution in this specific year."
-        )
+
+        age_distribution_text = \
+            "Select a year to view the age distribution in that year. " \
+            "Alternatively you can use the buttons below the chart to " \
+            "select the previous or next year."
         
-        dataset_text = (
-            "The data comes from the Dutch Centraal Bureau voor de Statistiek (CBS). "
-            "The data is retrieved periodically through the StatLine API. The population "
-            "dataset can be found [here](https://opendata.cbs.nl/portal.html?_la=nl&_catalog"
+        population_growth_text = \
+            "Select a population group to view the growth in population " \
+            "for that group over time."
+        
+        dataset_text = \
+            "The data comes from the Dutch Centraal Bureau voor de Statistiek (CBS). " \
+            "The data is retrieved periodically through the StatLine API. The population " \
+            "dataset can be found [here](https://opendata.cbs.nl/portal.html?_la=nl&_catalog" \
             "=CBS&tableId=85496NED&_theme=61)."
-        )
-        dashboard_code_text = (
-            "The code that implements this dashboard is licensed under the "
-            "open-source MIT license and can be found on the [GitHub page]"
+        
+        dashboard_code_text = \
+            "The code that implements this dashboard is licensed under the " \
+            "open-source MIT license and can be found on the [GitHub page]" \
             "(https://github.com/jimhoekstra/population-dashboard)."
-        )
+        
+        elements = [
+            Title(title="Age Distribution per Year"),
+            Paragraph(text=age_distribution_text),
+            YearSelect(),
+            AgeDistributionChart(),
+            build_columns(
+                SetYearButton(id="prev-year-btn", text="Previous Year", previous=True),
+                SetYearButton(id="next-year-btn", text="Next Year"),
+                SetYearButton(id="reset-year-btn", text="Reset 2024", target=2024),
+            ),
 
-        charts_column = Rows(
-            children=[
-                PopulationGrowthChart(),
-                AgeDistributionChart(),
-            ]
-        )
+            Title(title="Population Growth per Group"),
+            Paragraph(text=population_growth_text),
+            GroupSelect(),
+            PopulationGrowthChart(),
+            build_columns(
+                SetGroupButton(id="select-total", group=GroupOption.TOTAL, text=GroupOption.TOTAL),
+                SetGroupButton(id="select-men", group=GroupOption.MEN, text=GroupOption.MEN),
+                SetGroupButton(id="select-women", group=GroupOption.WOMEN, text=GroupOption.WOMEN),
+            ),
 
-        title_row = Title(title="Dutch Population Dashboard")
-        explanations_row = Columns(
-            children=[
-                Paragraph(text=group_select_text),
-                Paragraph(text=year_select_text),
-            ]
-        )
+            Title(title="Data & Code"),
+            Paragraph(text=dataset_text),
+            Paragraph(text=dashboard_code_text),
+        ]
 
-        group_input_block = FlexRows(children=[GroupSelect(), GroupResetBtn()])
-        year_input_block = FlexRows(
-            children=[
-                YearSelect(),
-                Columns(children=[PreviousYearBtn(), NextYearBtn()]),
-            ]
+        return build_rows(
+            *elements,
         )
-        inputs_row = Columns(children=[group_input_block, year_input_block])
-
-        dataset_col = FlexRows(
-            children=[
-                Title(title="Data", text_size="2xl"),
-                Paragraph(text=dataset_text),
-            ]
-        )
-        code_col = FlexRows(
-            children=[
-                Title(title="Code", text_size="2xl"),
-                Paragraph(text=dashboard_code_text),
-            ]
-        )
-        acknowledgements_row = Columns(children=[dataset_col, code_col])
-
-        right_column = FlexRows(
-            children=[
-                title_row,
-                explanations_row,
-                inputs_row,
-                Space(),
-                acknowledgements_row,
-            ]
-        )
-
-        return Columns(children=[charts_column, right_column])
 
 
 app = BasicApp.get_wsgi_application()

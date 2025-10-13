@@ -17,7 +17,7 @@ def preprocess_year(df: pl.DataFrame) -> pl.DataFrame:
     return df.with_columns(pl.col("Year").str.slice(0, 4).cast(int).alias("Year"))
 
 
-def get_population_growth_data(column: str) -> tuple[list[int], list[int]]:
+def get_population_growth_data(column: str) -> tuple[list[float], list[float]]:
     data = load_data_from_api()
     df = (
         pl.from_dicts(data["value"])
@@ -34,7 +34,7 @@ def get_population_growth_data(column: str) -> tuple[list[int], list[int]]:
 
     df = preprocess_year(df)
 
-    return df.get_column("Year").to_list(), df.get_column(column).to_list()
+    return df.get_column("Year").cast(pl.Float64).to_list(), df.get_column(column).cast(pl.Float64).to_list()
 
 
 def get_age_distribution(year: int) -> tuple[list[str], list[int]]:
