@@ -4,7 +4,7 @@ import polars as pl
 from newsflash.cache import cache_result
 
 
-@cache_result(60 * 60)
+@cache_result(60 * 60 * 24 * 7)
 def load_data_from_api():
     response = requests.get(
         "https://opendata.cbs.nl/ODataApi/odata/85496NED/TypedDataSet"
