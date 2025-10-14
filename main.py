@@ -132,7 +132,7 @@ class BasicApp(App):
             "(https://github.com/jimhoekstra/population-dashboard)."
         )
 
-        elements = [
+        return build_rows(
             Title(title="Dutch Population Dashboard"),
             Title(title="Age Groups", text_size="3xl"),
             Paragraph(text=age_distribution_text),
@@ -158,13 +158,16 @@ class BasicApp(App):
                     id="select-men", group=GroupOption.MEN, text=GroupOption.MEN
                 ),
             ),
-            Title(title="Data & Code", text_size="3xl"),
-            Paragraph(text=dataset_text),
-            Paragraph(text=dashboard_code_text),
-        ]
-
-        return build_rows(
-            *elements,
+            build_columns(
+                build_rows(
+                    Title(title="Data", text_size="3xl"),
+                    Paragraph(text=dataset_text),
+                ),
+                build_rows(
+                    Title(title="Code", text_size="3xl"),
+                    Paragraph(text=dashboard_code_text),
+                ),
+            ),
         )
 
 
