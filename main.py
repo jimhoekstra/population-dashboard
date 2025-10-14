@@ -159,14 +159,12 @@ class BasicApp(App):
                 ),
             ),
             build_columns(
-                build_rows(
-                    Title(title="Data", text_size="3xl"),
-                    Paragraph(text=dataset_text),
-                ),
-                build_rows(
-                    Title(title="Code", text_size="3xl"),
-                    Paragraph(text=dashboard_code_text),
-                ),
+                Title(title="Data", text_size="3xl"),
+                Title(title="Code", text_size="3xl"),
+            ),
+            build_columns(
+                Paragraph(text=dataset_text),
+                Paragraph(text=dashboard_code_text),
             ),
         )
 
