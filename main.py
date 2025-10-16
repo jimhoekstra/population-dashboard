@@ -34,21 +34,7 @@ class YearSelect(ListSelect):
     ) -> None:
         labels, bars = get_age_distribution(int(self.selected))
         bar_chart.title = f"Age Distribution in {self.selected}"
-        bar_chart.set_points(labels, [float(x) for x in bars])
-
-
-class GroupSelect(EnumSelect):
-    id: str = "group-select"
-    options: Type[StrEnum] = GroupOption
-    selected: GroupOption = GroupOption.TOTAL
-
-    def on_input(
-        self,
-        line_chart: Annotated["PopulationGrowthChart", "population-growth-line-chart"],
-    ) -> None:
-        years, points = get_population_growth_data(self.selected)
-        line_chart.title = f"Population Growth ({self.selected})"
-        line_chart.set_points(xs=years, ys=points)
+        bar_chart.set_points(labels, bars)
 
 
 class AgeDistributionChart(BarChart):
@@ -59,16 +45,6 @@ class AgeDistributionChart(BarChart):
         labels, bars = get_age_distribution(int(year_select.selected))
         self.title = f"Age Distribution in {year_select.selected}"
         self.set_points(labels, [float(x) for x in bars])
-
-
-class PopulationGrowthChart(LineChart):
-    id: str = "population-growth-line-chart"
-    y_major_grid_lines: bool = True
-
-    def on_load(self, group_select: Annotated[GroupSelect, "group-select"]) -> None:
-        years, points = get_population_growth_data(group_select.selected)
-        self.title = f"Population Growth ({group_select.selected})"
-        self.set_points(xs=years, ys=points)
 
 
 class SetYearButton(Button):
@@ -92,6 +68,30 @@ class SetYearButton(Button):
 
         year_select.selected = str(new_year)
         chart.on_load(year_select)
+
+
+class GroupSelect(EnumSelect):
+    id: str = "group-select"
+    options: Type[StrEnum] = GroupOption
+    selected: GroupOption = GroupOption.TOTAL
+
+    def on_input(
+        self,
+        line_chart: Annotated["PopulationGrowthChart", "population-growth-line-chart"],
+    ) -> None:
+        years, points = get_population_growth_data(self.selected)
+        line_chart.title = f"Population Growth ({self.selected})"
+        line_chart.set_points(xs=years, ys=points)
+
+
+class PopulationGrowthChart(LineChart):
+    id: str = "population-growth-line-chart"
+    y_major_grid_lines: bool = True
+
+    def on_load(self, group_select: Annotated[GroupSelect, "group-select"]) -> None:
+        years, points = get_population_growth_data(group_select.selected)
+        self.title = f"Population Growth ({group_select.selected})"
+        self.set_points(xs=years, ys=points)
 
 
 class SetGroupButton(Button):

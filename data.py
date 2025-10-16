@@ -39,7 +39,7 @@ def get_population_growth_data(column: str) -> tuple[list[float], list[float]]:
     ).to_list()
 
 
-def get_age_distribution(year: int) -> tuple[list[str], list[int]]:
+def get_age_distribution(year: int) -> tuple[list[str], list[float]]:
     data = load_data_from_api()
     df = (
         pl.from_dicts(data["value"])
