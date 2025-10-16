@@ -106,7 +106,7 @@ class SetGroupButton(Button):
         chart.on_load(group_select)
 
 
-class BasicApp(App):
+class PopulationDashboard(App):
     def compose(self) -> Layout:
         age_distribution_text = (
             "Select a year to view the age distribution in that year. "
@@ -169,8 +169,8 @@ class BasicApp(App):
         )
 
 
-app = BasicApp.get_wsgi_application()
+app = PopulationDashboard.get_wsgi_application()
 
 
 if __name__ == "__main__":
-    BasicApp.run()
+    PopulationDashboard.run()
