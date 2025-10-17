@@ -5,6 +5,8 @@ from newsflash import App
 from newsflash.types import Layout
 from newsflash.widgets import (
     Title,
+    SubTitle,
+    SubSubTitle,
     Paragraph,
     Button,
     ListSelect,
@@ -134,7 +136,7 @@ class PopulationDashboard(App):
 
         return build_rows(
             Title(title="Dutch Population Dashboard"),
-            Title(title="Age Groups", text_size="3xl"),
+            SubTitle(title="Age Groups"),
             Paragraph(text=age_distribution_text),
             YearSelect(),
             AgeDistributionChart(),
@@ -143,7 +145,7 @@ class PopulationDashboard(App):
                 SetYearButton(id="next-year-btn", text="Next Year"),
                 SetYearButton(id="reset-year-btn", text="Reset to 2024", target=2024),
             ),
-            Title(title="Population Growth", text_size="3xl"),
+            SubTitle(title="Population Growth"),
             Paragraph(text=population_growth_text),
             GroupSelect(),
             PopulationGrowthChart(),
@@ -159,8 +161,8 @@ class PopulationDashboard(App):
                 ),
             ),
             build_columns(
-                Title(title="Data", text_size="3xl"),
-                Title(title="Code", text_size="3xl"),
+                SubSubTitle(title="Data"),
+                SubSubTitle(title="Code"),
             ),
             build_columns(
                 Paragraph(text=dataset_text),
