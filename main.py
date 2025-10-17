@@ -100,7 +100,7 @@ class SetGroupButton(Button):
     def on_click(
         self,
         chart: Annotated[PopulationGrowthChart, "population-growth-line-chart"],
-        group_select: Annotated[GroupSelect, "group-select", "output"],
+        group_select: Annotated[GroupSelect, "group-select", "input+output"],
     ) -> None:
         group_select.selected = self.group
         chart.on_load(group_select)
