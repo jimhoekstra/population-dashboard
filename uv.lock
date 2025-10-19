@@ -149,16 +149,16 @@ wheels = [
 
 [[package]]
 name = "newsflash"
-version = "0.1.12"
+version = "0.1.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "fonttools" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cc/df/fdd0c491d9a3ea19992e60c41a446df93786ab33c8aeb8c32d6ab2d03698/newsflash-0.1.12.tar.gz", hash = "sha256:ff59e6691ea276a09d29b2035bf769cc60c3bd96aa56d885a3c007405e913cdc", size = 1143620, upload-time = "2025-10-17T21:57:48.124Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/37/afcbb304c2fdf09ac45428a274e1d3542f713bc2b9bb4b43795cfb39236a/newsflash-0.1.13.tar.gz", hash = "sha256:a8d1ae9de520a1f19db8ad8a425053cd9c78418a978b979a88bb526835c486b1", size = 1143724, upload-time = "2025-10-19T18:44:51.168Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/df/71e9775c10f10919e3515bd351ca17abec90c6fad147ef7dbbd3f0b100a6/newsflash-0.1.12-py3-none-any.whl", hash = "sha256:1e899f81cfbe5c0333a7151c3060027bac78689685acb65edcb7e1ae90d42e9b", size = 1146250, upload-time = "2025-10-17T21:57:46.555Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/02/91aa2f73f07b453d4769e11325645d675d34c7a6c86b90616191d5ce52ed/newsflash-0.1.13-py3-none-any.whl", hash = "sha256:871011a7db39e5e70cf2bdd4910676c9aec1ca736e611d339eebd2a3d8d99ebb", size = 1146500, upload-time = "2025-10-19T18:44:48.68Z" },
 ]
 
 [[package]]
@@ -215,7 +215,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "gunicorn", specifier = ">=23.0.0" },
-    { name = "newsflash", specifier = ">=0.1.12" },
+    { name = "newsflash", specifier = ">=0.1.13" },
     { name = "polars", specifier = ">=1.34.0" },
     { name = "requests", specifier = ">=2.32.5" },
 ]
