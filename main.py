@@ -11,12 +11,14 @@ from newsflash.widgets import (
     Button,
     ListSelect,
     EnumSelect,
+    Notifications,
 )
 from newsflash.widgets.chart.bar import BarChart
 from newsflash.widgets.chart.line import LineChart
-from data import get_population_growth_data, get_age_distribution
 from newsflash.widgets.layout.columns import build_columns
 from newsflash.widgets.layout.flex import build_rows
+
+from data import get_population_growth_data, get_age_distribution
 
 
 class GroupOption(StrEnum):
@@ -53,13 +55,7 @@ class SetYearButton(Button):
     previous: bool = False
     target: int | None = None
 
-    def on_click(
-        self,
-        chart: Annotated[AgeDistributionChart, "age-distribution-bar-chart"],
-        year_select: Annotated[YearSelect, "year-select", "input+output"],
-    ) -> None:
-        current_year = int(year_select.selected)
-
+    def get_new_year(self, current_year: int) -> int:
         if self.target:
             new_year = self.target
         else:
@@ -68,8 +64,30 @@ class SetYearButton(Button):
             else:
                 new_year = current_year + 1
 
-        year_select.selected = str(new_year)
-        chart.on_load(year_select)
+        return new_year
+
+    def on_click(
+        self,
+        chart: Annotated[AgeDistributionChart, "age-distribution-bar-chart"],
+        year_select: Annotated[YearSelect, "year-select", "input+output"],
+        notifications: Annotated[Notifications, "notifications"],
+    ) -> None:
+        current_year = int(year_select.selected)
+        new_year = self.get_new_year(current_year)
+
+        if new_year > 2024:
+            notifications.push(text="No data available after 2024.")
+            year_select.cancel_update()
+            chart.cancel_update()
+
+        elif new_year < 1950:
+            notifications.push(text="Not data available before 1950.")
+            year_select.cancel_update()
+            chart.cancel_update()
+
+        else:
+            year_select.selected = str(new_year)
+            chart.on_load(year_select)
 
 
 class GroupSelect(EnumSelect):
@@ -110,15 +128,37 @@ class SetGroupButton(Button):
 
 class PopulationDashboard(App):
     def compose(self) -> Layout:
+        dashboard_explanation_text = (
+            "Welcome! This dashboard presents information about the population "
+            "of The Netherlands. It is a showcase for how to use the [NewsFlash]"
+            "(https://github.com/jimhoekstra/newsflash) framework to build simple "
+            "apps for presenting data and responding to user input in a flexible "
+            "and robust way."
+        )
+
+        dashboard_code_link = (
+            "Check out the code for this dashboard [on GitHub]"
+            "(https://github.com/jimhoekstra/population-dashboard)."
+        )
+
         age_distribution_text = (
-            "Select a year to view the age distribution in that year. "
-            "Alternatively you can use the buttons below the chart to "
-            "select the previous or next year."
+            "Select a year to view the age distribution in that year in the "
+            "bar chart below. Note you can also type to search and select the "
+            "first search result by pressing Enter."
+        )
+
+        year_select_buttons_text = (
+            "As an alternative to selecting a year in the dropdown above, "
+            "press one of these buttons. Note that the result of pressing a "
+            "button depends on the current value of the dropdown, and that "
+            "the value in the dropdown is updated when pressing one of the "
+            "buttons."
         )
 
         population_growth_text = (
             "Select a population group to view the growth in population "
-            "for that group over time."
+            "for that group over time. Alternatively use the buttons below "
+            "the line chart."
         )
 
         dataset_text = (
@@ -130,16 +170,19 @@ class PopulationDashboard(App):
 
         dashboard_code_text = (
             "The code that implements this dashboard is licensed under the "
-            "open-source MIT license and can be found on the [GitHub page]"
+            "open-source MIT license and can be found on [GitHub]"
             "(https://github.com/jimhoekstra/population-dashboard)."
         )
 
         return build_rows(
-            Title(title="Dutch Population Dashboard"),
+            Title(title="Population Dashboard"),
+            Paragraph(text=dashboard_explanation_text),
+            Paragraph(text=dashboard_code_link),
             SubTitle(title="Age Groups"),
             Paragraph(text=age_distribution_text),
             YearSelect(),
             AgeDistributionChart(),
+            Paragraph(text=year_select_buttons_text),
             build_columns(
                 SetYearButton(id="prev-year-btn", text="Previous Year", previous=True),
                 SetYearButton(id="next-year-btn", text="Next Year"),
