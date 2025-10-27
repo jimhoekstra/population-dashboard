@@ -15,10 +15,12 @@ from newsflash.widgets import (
 )
 from newsflash.widgets.chart.bar import BarChart
 from newsflash.widgets.chart.line import LineChart
+from newsflash.widgets.chart.hist import HistChart
 from newsflash.widgets.layout.columns import build_columns
 from newsflash.widgets.layout.flex import build_rows
 
 from data import get_population_growth_data, get_age_distribution
+from random import gauss
 
 
 class GroupOption(StrEnum):
@@ -49,6 +51,15 @@ class AgeDistributionChart(BarChart):
         labels, bars = get_age_distribution(int(year_select.selected))
         self.title = f"Age Distribution in {year_select.selected}"
         self.set_points(labels, [float(x) for x in bars])
+
+
+class NormalDistribution(HistChart):
+    id: str = "hist-test"
+    y_major_grid_lines: bool = True
+    title: str = "Normal Distribution"
+
+    def on_load(self) -> None:
+        self.set_points([gauss(5, 2) for _ in range(10000)], 50)
 
 
 class SetYearButton(Button):
@@ -161,6 +172,12 @@ class PopulationDashboard(App):
             "the line chart."
         )
 
+        normal_distribution_text = (
+            "I haven't yet found good data to demo the histogram functionality "
+            "with, so here is a histogram of values generated from a Gaussian "
+            "function with mean 5 and standard deviation 2."
+        )
+
         dataset_text = (
             "The data comes from the Dutch Centraal Bureau voor de Statistiek (CBS). "
             "The data is retrieved periodically through the StatLine API. The population "
@@ -203,6 +220,10 @@ class PopulationDashboard(App):
                     id="select-men", group=GroupOption.MEN, text=GroupOption.MEN
                 ),
             ),
+            SubTitle(title="Histogram"),
+            Paragraph(text=normal_distribution_text),
+            NormalDistribution(),
+            Title(title="Links"),
             build_columns(
                 SubSubTitle(title="Data"),
                 SubSubTitle(title="Code"),
