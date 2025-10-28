@@ -1,0 +1,159 @@
+{% load widget %}
+
+<main>
+    <h1>Population Dashboard</h1>
+
+    <p>
+        Welcome! This dashboard presents information about the population
+        of The Netherlands. It is a showcase for how to use the 
+        <a href="https://github.com/jimhoekstra/newsflash">NewsFlash</a>
+        framework to build simple apps for presenting data and responding 
+        to user input in a flexible and robust way.
+    </p>
+
+    <p>
+        Check out the code for this project on
+        <a href="https://github.com/jimhoekstra/population-dashboard">GitHub</a>.
+    </p>
+
+    <h2>Age Groups</h2>
+
+    <p>
+        Select a year to view the age distribution in that year in the
+        bar chart below. Note you can also type to search and select the
+        first search result by pressing Enter.
+    </p>
+
+    <div class="widget">
+        {% widget "year-select" %}
+    </div>
+
+    <div class="widget">
+        {% widget "age-distribution-bar-chart" %}
+    </div>
+
+    <p>
+        As an alternative to selecting a year in the dropdown above,
+        press one of these buttons. Note that the result of pressing a
+        button depends on the current value of the dropdown, and that
+        the value in the dropdown is updated when pressing one of the
+        buttons.
+    </p>
+
+    <div style="display: flex; flex-direction: row; gap: 1.5rem;">
+        {% widget "previous-year-button" %}
+        {% widget "next-year-button" %}
+        {% widget "reset-year-button" %}
+    </div>
+
+    <h2>Population Growth</h2>
+
+    <p>
+        Select a population group to view the growth in population
+        for that group over time. Alternatively use the buttons below
+        the line chart.
+    </p>
+
+    <div class="widget">
+        {% widget "group-select" %}
+    </div>
+
+    <div class="widget">
+        {% widget "population-growth-line-chart" %}
+    </div>
+
+    <div class="columns">
+        {% widget "total-group-button" %}
+        {% widget "women-group-button" %}
+        {% widget "men-group-button" %}
+    </div>
+
+    <h2>Histogram Demo</h2>
+
+    <p>
+        I haven't yet found good data to demo the histogram functionality
+        with, so here is a histogram of values generated from a Gaussian
+        function with mean 5 and standard deviation 2.
+    </p>
+    
+    <div class="columns">
+        <div class="full-width">
+            <p>Mean:</p>
+            {% widget "mean-select" %}
+        </div>
+        <div class="full-width">
+            <p>Standard Deviation:</p>
+            {% widget "standard-deviation-select" %}
+        </div>
+    </div>
+
+    <div class="widget">
+        {% widget "normal-distribution" %}
+    </div>
+
+    <div class="columns">
+        <div class="full-width">
+            <h3>Data</h3>
+            <p>
+                The data comes from the Dutch Centraal Bureau voor de 
+                Statistiek (CBS). The data is retrieved periodically 
+                through the StatLine API. The population dataset can be found 
+                <a href="https://opendata.cbs.nl/portal.html?_la=nl&_catalog=CBS&tableId=85496NED&_theme=61">here</a>.
+            </p>
+        </div>
+        <div class="full-width">
+            <h3>Code</h3>
+            <p>
+                The code that implements this dashboard is licensed 
+                under the open-source MIT license and can be found on 
+                <a href="https://github.com/jimhoekstra/population-dashboard">GitHub</a>.
+            </p>
+        </div>
+    </div>
+</main>
+
+<style>
+    main {
+        max-width: 720px;
+        margin: 0 auto 5rem auto;
+    }
+
+    h1 {
+        font-size: 2.4rem;
+    }
+    
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+    
+    h1, h2 {
+        margin-top: 3rem;
+    }
+
+    p {
+        margin: 1.25rem 0;
+    }
+
+    .widget {
+        margin: 2rem 0;
+    }
+
+    a {
+        color: #89b4fa;
+        text-decoration: underline;
+    }
+
+    .columns {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+
+    .full-width {
+        width: 100%;
+    }
+</style>
