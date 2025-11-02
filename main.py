@@ -7,7 +7,6 @@ from widgets.histogram import histogram_widgets
 
 
 root_page = Page(
-    # For now only the "/" path actually does something.
     path="/",
     name="root",
     layout="index.html",
@@ -16,7 +15,6 @@ root_page = Page(
 
 app = App(
     pages=[root_page],
-    layout_dirs=[Path.cwd() / "layouts"],
 )
 
 
