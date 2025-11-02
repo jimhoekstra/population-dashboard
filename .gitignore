@@ -10,4 +10,4 @@ wheels/
 .venv
 db.sqlite3
 staticfiles/
-start.sh
+settings.toml
