@@ -33,7 +33,8 @@ class GroupSelect(EnumSelect):
 
 class PopulationGrowthChart(LineChart):
     id: str = "population-growth-line-chart"
-    x_axis_description: str = "Years"
+    x_axis_label: str = "Years"
+    y_axis_label: str = "Number of People"
 
     def on_load(self, group_select: Annotated[GroupSelect, "group-select"]) -> None:
         years, points = get_population_growth_data(group_select.selected)

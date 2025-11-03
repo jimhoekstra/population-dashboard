@@ -34,7 +34,8 @@ class YearSelect(ListSelect):
 
 class AgeDistributionChart(BarChart):
     id: str = "age-distribution-bar-chart"
-    x_axis_description: str = "Age Groups"
+    x_axis_label: str = "Age Groups"
+    y_axis_label: str = "Number of People"
 
     def on_load(self, year_select: Annotated[YearSelect, "year-select"]) -> None:
         labels, bars = get_age_distribution(int(year_select.selected))

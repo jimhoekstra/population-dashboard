@@ -40,6 +40,8 @@ class NormalDistribution(HistChart):
     id: str = "normal-distribution"
     y_major_grid_lines: bool = True
     title: str = "Normal Distribution"
+    x_axis_label: str = "Value"
+    y_axis_label: str = "Occurrence"
 
     def on_load(
         self,
