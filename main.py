@@ -1,4 +1,3 @@
-from pathlib import Path
 from newsflash import App, Page
 
 from widgets.age_groups import age_groups_widgets
@@ -16,7 +15,3 @@ root_page = Page(
 app = App(
     pages=[root_page],
 )
-
-
-if __name__ == "__main__":
-    app.run()

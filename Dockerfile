@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim
 
 ENV PYTHONUNBUFFERED=1
 
@@ -10,10 +10,10 @@ WORKDIR /home/appuser/app
 
 RUN chown -R appuser:appuser /home/appuser/app
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN uv sync
 
 EXPOSE 8000
 
 USER appuser
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "main:wsgi_app"]
+CMD ["uv", "run", "newsflash", "dev", "main:app"]
